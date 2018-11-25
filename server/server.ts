@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 
 const app: Application = express();
 
+//Because heroku
 const PORT = process.env.PORT || 8080;
 
 app.use(function (req, res, next) {
