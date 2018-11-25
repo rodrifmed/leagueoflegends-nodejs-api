@@ -1,19 +1,11 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
         "target": "es5",
-        "noImplicitAny": true,
-        "sourceMap": true,
-        "strictNullChecks": true,
-        "noEmitOnError": true,
+        "lib": ["es6", "dom"],
+        "types": ["reflect-metadata", "node"],
+        "module": "commonjs",
+        "moduleResolution": "node",
         "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "lib": [
-            "es6"
-        ],
-        "skipLibCheck": true
-    },
-    "exclude": [
-        "client/node_modules"
-    ]
+        "emitDecoratorMetadata": true
+    }
 }
