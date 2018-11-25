@@ -1,7 +1,7 @@
 
 import { Application } from "express";
 import { apiGetMatches } from "./apiGetMatches";
-import { onSuccess } from "../../examples/node-firebase-rest-api-example/server/api/onSuccess";
+import { onSuccess } from "../api/onSuccess";
 import container from "../config/inversify-config";
 import { IRiotLibWrapper } from "../wrapper/IRiotLibWrapper";
 import INVERSIFY_TYPES from "../config/inversify-types";
