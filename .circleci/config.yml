@@ -12,7 +12,7 @@ jobs:
      # build image
      - run: |
          docker info
-         docker build -t leagueoflegends-api LeangueOfLegendsApi
+         docker build -t leagueoflegends-api .
 
      # deploy the image
      - run: |
