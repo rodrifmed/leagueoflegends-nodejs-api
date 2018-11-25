@@ -24,7 +24,9 @@
   "dependencies": {
     "@types/es6-promise": "^3.3.0",
     "express": "^4.16.4",
+    "inversify": "^5.0.1",
     "kayn": "^0.8.26",
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.11",
+    "reflect-metadata": "^0.1.12"
   }
 }
