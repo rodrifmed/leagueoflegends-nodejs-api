@@ -15,7 +15,7 @@ jobs:
      # build image
      - run: |
          docker info
-         docker build ENV RIOT_API_KEY=$RIOT_API_KEY USE_CACHE=$USE_CACHE REDIS_HOST=$REDIS_HOST REDIS_PORT=$REDIS_PORT -t leagueoflegends-api .
+         docker build --build-arg RIOT_API_KEY=$RIOT_API_KEY --build-arg USE_CACHE=$USE_CACHE --build-arg REDIS_HOST=$REDIS_HOST --build-arg REDIS_PORT=$REDIS_PORT -t leagueoflegends-api .
 
      # deploy the image
      - run: |
