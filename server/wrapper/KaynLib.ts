@@ -9,13 +9,6 @@ import { MatchV3MatchReferenceDto } from "kayn/typings/dtos";
 import { SummonerRune } from "../model/SummonerRune";
 import lodash = require("lodash");
 
-const redisCache = new RedisCache({
-    host: 'localhost',
-    port: 6379,
-    keyPrefix: 'kayn',
-    password: 'hello-world'
-})
-
 const kaynConfig: KaynConfig = {
     region: REGIONS.BRAZIL,
     debugOptions: {
@@ -26,25 +19,14 @@ const kaynConfig: KaynConfig = {
         shouldRetry: true,
         numberOfRetriesBeforeAbort: 3,
         delayBeforeRetry: 3000,
-    },
-    cacheOptions: {
-        cache: redisCache,
-        timeToLives: {
-            useDefault: true,
-            byGroup: {
-                DDRAGON: 1000 * 60 * 60 * 24 * 30, // cache for a month
-            },
-            byMethod: {
-                [METHOD_NAMES.SUMMONER.GET_BY_SUMMONER_NAME]: 50000, // ms
-            },
-        },
-    },
+    }
 }
 
 @injectable()
 export class KaynLib implements IRiotLibWrapper {
 
-    riotApiKey: string = 'RGAPI-95baa7bb-18b2-4ac6-85ae-6fcd674b093b';
+    riotApiKey: string = process.env.RIOT_API_KEY
+    useCache: string = process.env.USE_CACHE
 
     kayn: any;
 
@@ -52,6 +34,31 @@ export class KaynLib implements IRiotLibWrapper {
     }
 
     initApi() {
+
+        if(this.useCache === 'true'){
+
+            const redisCache = new RedisCache({
+                host: process.env.REDIS_HOST,
+                port: process.env.REDIS_PORT,
+                keyPrefix: 'kayn'
+            })
+
+            kaynConfig.cacheOptions = {
+                cache: redisCache,
+                timeToLives: {
+                    useDefault: true,
+                    byGroup: {
+                        DDRAGON: 1000 * 60 * 60 * 24 * 30, // cache for a month
+                    },
+                    byMethod: {
+                        [METHOD_NAMES.SUMMONER.GET_BY_SUMMONER_NAME]: 1800000, // ms // 30min
+                        [METHOD_NAMES.MATCH.GET_MATCHLIST]: 1800000, // ms // 30min
+                        [METHOD_NAMES.MATCH.GET_MATCH]: 1800000, // ms // 30min
+                    },
+                },
+            }
+        }
+
         this.kayn = Kayn(this.riotApiKey)(kaynConfig)
     }
 
@@ -72,7 +79,7 @@ export class KaynLib implements IRiotLibWrapper {
 
         const matchlist = await this.kayn.Matchlist.by.accountID(summonerInfo.accountId).query({
             beginIndex: 0,
-            endIndex: 1
+            endIndex: 5
         });
 
         const matchesV3 = matchlist.matches as MatchV3MatchReferenceDto[];
