@@ -1,14 +1,13 @@
-export class Summoner {
+export class SummonerInfo {
     id: number
     name: string
     accountId: number
     profileIconId: number
     revisionDate: number
     summonerLevel: number
-    matches: any[]
 
     constructor(id: number, name: string, accountId: number, profileIconId: number, revisionDate: number, summonerLevel: number) {
-        this.id = id
+        this.id = id;
         this.name = name
         this.accountId = accountId
         this.profileIconId = profileIconId
@@ -17,16 +16,17 @@ export class Summoner {
     }
 
     static fromJson({ id,
-        name,
         accountId,
+        name,
         profileIconId,
         revisionDate,
         summonerLevel }) {
-        return new Summoner(id,
+
+        return new SummonerInfo(id,
             name,
             accountId,
             profileIconId,
             revisionDate,
-            summonerLevel)
+            summonerLevel);
     }
 }
