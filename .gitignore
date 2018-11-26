@@ -1,3 +1,5 @@
 node_modules
 examples
 .vscode
+.env
+yarn.lock

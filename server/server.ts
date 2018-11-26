@@ -4,6 +4,8 @@ import { initRestApi } from "./api/api";
 
 const bodyParser = require('body-parser');
 
+require('dotenv').config();
+
 const app: Application = express();
 
 //Because heroku
