@@ -4,9 +4,8 @@ jobs:
    branches:
      only:
        - master
-   machine:
-    node:
-      version: 8.11.3
+   docker:
+     - image: circleci:8.12-browsers-legacy
    steps:
      - checkout
 
