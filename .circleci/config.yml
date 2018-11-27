@@ -4,7 +4,9 @@ jobs:
    branches:
      only:
        - master
-   machine: true
+   machine:
+    node:
+      version: 8.11.3
    steps:
      - checkout
 
