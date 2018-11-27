@@ -16,7 +16,9 @@ jobs:
      # test
      - run: |
          npm test
-         
+
+     - setup_remote_docker
+
      # build image
      - run: |
          docker info
