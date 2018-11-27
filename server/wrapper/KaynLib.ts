@@ -12,7 +12,7 @@ import lodash = require("lodash");
 process.env.LEAGUE_API_PLATFORM_ID = 'br';
 
 import LeagueJs = require('leaguejs');
-const leagueJs = new LeagueJs(process.env.RIOT_API_KEY);
+const leagueJs = new LeagueJs(process.env.RIOT_API_KEY,{STATIC_DATA_ROOT:'./server/assets/ddragon'});
 
 const kaynConfig: KaynConfig = {
     region: REGIONS.BRAZIL,
