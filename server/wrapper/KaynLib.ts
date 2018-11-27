@@ -62,7 +62,7 @@ export class KaynLib implements IRiotLibWrapper {
         }
 
         this.kayn = Kayn(this.riotApiKey)(kaynConfig);
-        leagueJs.StaticData.setup('./assets/ddragon', true);
+        leagueJs.StaticData.setup('./assets/ddragon');
 
 
     }
@@ -130,8 +130,6 @@ export class KaynLib implements IRiotLibWrapper {
 
             const spell1 = spell1Obj.key;
             const spell2 = spell2Obj.key;
-
-            console.log(statsObject);
 
             const perk0Obj = await leagueJs.StaticData.gettingReforgedRuneById(statsObject.perk0);
             const perk1Obj = await leagueJs.StaticData.gettingReforgedRuneById(statsObject.perk1);

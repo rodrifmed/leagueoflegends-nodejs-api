@@ -9,14 +9,17 @@ jobs:
      - checkout
 
      # test
-     #- run: |
-     #    docker-compose -f docker-compose.unittests.yml run --rm unittests
+     - run: |
+         npm install
+
+     # test
+     - run: |
+         npm test
          
      # build image
      - run: |
          docker info
          docker build --build-arg RIOT_API_KEY=$RIOT_API_KEY --build-arg USE_CACHE=$USE_CACHE --build-arg REDIS_HOST=$REDIS_HOST --build-arg REDIS_PORT=$REDIS_PORT -t leagueoflegends-api .
-
      # deploy the image
      - run: |
          set -eu -o pipefail
