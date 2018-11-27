@@ -11,7 +11,7 @@ export class Match {
     summonerName: string // name
     summonerSpells: number[] // matches[].gameDetail.participants[x].spell1Id/spell2Id
     summonerRunes: SummonerRune[] // matches[].gameDetail.participants[x].stats.perk'X'/perk'X'Var'Y'
-    items: number[] // matches[].gameDetail.participants[x].stats.item0-6
+    items: string[] // matches[].gameDetail.participants[x].stats.item0-6
     championLevel: 13 // matches[].gameDetail.participants[x].stats.champLevel 
 
 }
