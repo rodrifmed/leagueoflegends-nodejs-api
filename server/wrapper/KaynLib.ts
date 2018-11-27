@@ -9,6 +9,11 @@ import { MatchV3MatchReferenceDto } from "kayn/typings/dtos";
 import { SummonerRune } from "../model/SummonerRune";
 import lodash = require("lodash");
 
+process.env.LEAGUE_API_PLATFORM_ID = 'br';
+
+import LeagueJs = require('leaguejs');
+const leagueJs = new LeagueJs(process.env.RIOT_API_KEY);
+
 const kaynConfig: KaynConfig = {
     region: REGIONS.BRAZIL,
     debugOptions: {
@@ -35,7 +40,7 @@ export class KaynLib implements IRiotLibWrapper {
 
     initApi() {
 
-        if(this.useCache === 'true'){
+        if (this.useCache === 'true') {
 
             const redisCache = new RedisCache({
                 host: process.env.REDIS_HOST,
@@ -47,9 +52,6 @@ export class KaynLib implements IRiotLibWrapper {
                 cache: redisCache,
                 timeToLives: {
                     useDefault: true,
-                    byGroup: {
-                        DDRAGON: 1000 * 60 * 60 * 24 * 30, // cache for a month
-                    },
                     byMethod: {
                         [METHOD_NAMES.SUMMONER.GET_BY_SUMMONER_NAME]: 1800000, // ms // 30min
                         [METHOD_NAMES.MATCH.GET_MATCHLIST]: 1800000, // ms // 30min
@@ -59,7 +61,10 @@ export class KaynLib implements IRiotLibWrapper {
             }
         }
 
-        this.kayn = Kayn(this.riotApiKey)(kaynConfig)
+        this.kayn = Kayn(this.riotApiKey)(kaynConfig);
+        leagueJs.StaticData.setup('./assets/ddragon', true);
+
+
     }
 
     async getMatchesStatsByName(name: string) {
@@ -107,19 +112,37 @@ export class KaynLib implements IRiotLibWrapper {
     async setGames(matches: Match[]) {
 
         const matchesWithGamesPromise = matches.map(async match => {
-            const gameMatch = await this.kayn.Match.get(match.gameId);
+            const championObj = await leagueJs.StaticData.gettingChampionById(match.championName); 
 
-            match.gameDuration = gameMatch.gameDuration;
+            match.championName = championObj.name;
+
+            const gameMatch = await this.kayn.Match.get(match.gameId);
+            
+            match.gameDuration = this.secondsToHms(gameMatch.gameDuration);
 
             const participantId = this.findParticipantId(gameMatch, match.accountId);
             const participantObject = this.getParcipantObject(gameMatch, participantId);
             const statsObject = participantObject.stats;
             const teamId = participantObject.teamId;
 
+            const spell1Obj = await leagueJs.StaticData.gettingSummonerSpellsById(participantObject.spell1Id);
+            const spell2Obj = await leagueJs.StaticData.gettingSummonerSpellsById(participantObject.spell2Id);
+
+            const spell1 = spell1Obj.key;
+            const spell2 = spell2Obj.key;
+
+            console.log(statsObject);
+
+            const perk0Obj = await leagueJs.StaticData.gettingReforgedRuneById(statsObject.perk0);
+            const perk1Obj = await leagueJs.StaticData.gettingReforgedRuneById(statsObject.perk1);
+
+            const perk0 = perk0Obj.icon;
+            const perk1 = perk1Obj.icon;
+
             match.outcome = this.getOutcome(gameMatch, teamId);
             match.kda = statsObject.kills + "-" + statsObject.deaths + "-" + statsObject.assists;
-            match.summonerSpells = lodash.concat(participantObject.spell1Id, participantObject.spell2Id);
-            match.summonerRunes = this.getRunes(statsObject);
+            match.summonerSpells = lodash.concat(spell1, spell2);
+            match.summonerRunes = lodash.concat(perk0, perk1);
             match.items = this.getItems(statsObject);
             match.championLevel = statsObject.champLevel;
 
@@ -130,11 +153,11 @@ export class KaynLib implements IRiotLibWrapper {
 
     }
 
-    getItems(statsObject: any): number[] {
-        let items: number[] = [];
+    getItems(statsObject: any): string[] {
+        let items: string[] = [];
 
         for (let i = 0; i < 7; i++) {
-            items.push(statsObject[`item${i}`]);
+            items.push(statsObject[`item${i}`] + ".png");
         }
 
         return items;
@@ -204,6 +227,19 @@ export class KaynLib implements IRiotLibWrapper {
         });
 
         return participantId;
+    }
+
+
+    secondsToHms(d) {
+        d = Number(d);
+        var h = Math.floor(d / 3600);
+        var m = Math.floor(d % 3600 / 60);
+        var s = Math.floor(d % 3600 % 60);
+
+        var hDisplay = h > 0 ? h + "h" : "";
+        var mDisplay = m > 0 ? m + "m" : "";
+        var sDisplay = s > 0 ? s + "s" : "";
+        return hDisplay + " " + mDisplay + " " + sDisplay;
     }
 
 }
