@@ -13,5 +13,6 @@ export class Match {
     summonerRunes: string[]
     items: string[]
     championLevel: number
+    championImgProfile:string
 
 }

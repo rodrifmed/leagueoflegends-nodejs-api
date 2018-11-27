@@ -48,6 +48,7 @@ describe('/GET matches:name', () => {
                     matchs.should.have.property('summonerRunes')
                     matchs.should.have.property('items')
                     matchs.should.have.property('championLevel')
+                    matchs.should.have.property('championImgProfile')
                 });
 
                 done();

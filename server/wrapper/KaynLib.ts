@@ -12,7 +12,7 @@ import lodash = require("lodash");
 process.env.LEAGUE_API_PLATFORM_ID = 'br';
 
 import LeagueJs = require('leaguejs');
-const leagueJs = new LeagueJs(process.env.RIOT_API_KEY,{STATIC_DATA_ROOT:'./server/assets/ddragon'});
+const leagueJs = new LeagueJs(process.env.RIOT_API_KEY, { STATIC_DATA_ROOT: './server/assets/ddragon' });
 
 const kaynConfig: KaynConfig = {
     region: REGIONS.BRAZIL,
@@ -82,7 +82,7 @@ export class KaynLib implements IRiotLibWrapper {
 
         const matchlist = await this.kayn.Matchlist.by.accountID(summonerInfo.accountId).query({
             beginIndex: 0,
-            endIndex: 5
+            endIndex: 10
         });
 
         const matchesV3 = matchlist.matches as MatchV3MatchReferenceDto[];
@@ -110,12 +110,13 @@ export class KaynLib implements IRiotLibWrapper {
     async setGames(matches: Match[]) {
 
         const matchesWithGamesPromise = matches.map(async match => {
-            const championObj = await leagueJs.StaticData.gettingChampionById(match.championName); 
+            const championObj = await leagueJs.StaticData.gettingChampionById(match.championName);
 
             match.championName = championObj.name;
+            match.championImgProfile = championObj.image.full;
 
             const gameMatch = await this.kayn.Match.get(match.gameId);
-            
+
             match.gameDuration = this.secondsToHms(gameMatch.gameDuration);
 
             const participantId = this.findParticipantId(gameMatch, match.accountId);
@@ -153,7 +154,10 @@ export class KaynLib implements IRiotLibWrapper {
         let items: string[] = [];
 
         for (let i = 0; i < 7; i++) {
-            items.push(statsObject[`item${i}`] + ".png");
+            let item = statsObject[`item${i}`];
+            if (item !== 0) {
+                items.push(statsObject[`item${i}`] + ".png");
+            }
         }
 
         return items;
