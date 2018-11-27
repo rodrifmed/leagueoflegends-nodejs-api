@@ -62,8 +62,6 @@ export class KaynLib implements IRiotLibWrapper {
         }
 
         this.kayn = Kayn(this.riotApiKey)(kaynConfig);
-        leagueJs.StaticData.setup('./assets/ddragon');
-
 
     }
 

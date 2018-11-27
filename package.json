@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "./node_modules/.bin/ts-node ./server/server.ts",
-    "test": "mocha --timeout 10000 --require ts-node/register test/**/*.ts"
+    "test": "mocha --timeout 10000 --require ts-node/register test/**/*.ts --exit"
   },
   "author": "Rodrigo Medeiros",
   "license": "ISC",
