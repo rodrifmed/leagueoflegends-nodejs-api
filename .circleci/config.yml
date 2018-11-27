@@ -8,6 +8,17 @@ jobs:
    steps:
      - checkout
 
+     - run:
+          name: update-npm
+          command: 'sudo npm install -g npm@latest'
+
+     - restore_cache: # special step to restore the dependency cache
+          key: dependency-cache-{{ checksum "package.json" }}
+          
+     - save_cache: # special step to save the dependency cache
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules 
      # test
      - run: |
          npm install
