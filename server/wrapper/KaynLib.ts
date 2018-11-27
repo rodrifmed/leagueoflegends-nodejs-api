@@ -110,10 +110,12 @@ export class KaynLib implements IRiotLibWrapper {
     async setGames(matches: Match[]) {
 
         const matchesWithGamesPromise = matches.map(async match => {
-            const championObj = await leagueJs.StaticData.gettingChampionById(match.championName);
+            const championObj = await this.getStatiscData(leagueJs.StaticData.gettingChampionById(match.championName));
 
-            match.championName = championObj.name;
-            match.championImgProfile = championObj.image.full;
+            if (championObj !== null) {
+                match.championName = championObj.name;
+                match.championImgProfile = championObj.image.full;
+            }
 
             const gameMatch = await this.kayn.Match.get(match.gameId);
 
@@ -124,30 +126,43 @@ export class KaynLib implements IRiotLibWrapper {
             const statsObject = participantObject.stats;
             const teamId = participantObject.teamId;
 
-            const spell1Obj = await leagueJs.StaticData.gettingSummonerSpellsById(participantObject.spell1Id);
-            const spell2Obj = await leagueJs.StaticData.gettingSummonerSpellsById(participantObject.spell2Id);
+            const spell1Obj = await this.getStatiscData(leagueJs.StaticData.gettingSummonerSpellsById(participantObject.spell1Id));
+            const spell2Obj = await this.getStatiscData(leagueJs.StaticData.gettingSummonerSpellsById(participantObject.spell2Id));
 
-            const spell1 = spell1Obj.key;
-            const spell2 = spell2Obj.key;
+            let summonerSpells: any[] = [];
+            if (spell1Obj !== null) summonerSpells.push(spell1Obj.key);
+            if (spell2Obj !== null) summonerSpells.push(spell2Obj.key);
 
-            const perk0Obj = await leagueJs.StaticData.gettingReforgedRuneById(statsObject.perk0);
-            const perk1Obj = await leagueJs.StaticData.gettingReforgedRuneById(statsObject.perk1);
+            const perk0Obj = await this.getStatiscData(leagueJs.StaticData.gettingReforgedRuneById(statsObject.perk0));
+            const perk1Obj = await this.getStatiscData(leagueJs.StaticData.gettingReforgedRuneById(statsObject.perk1));
 
-            const perk0 = perk0Obj.icon;
-            const perk1 = perk1Obj.icon;
+            let summonerRune: any[] = [];
+            if (perk0Obj !== null) summonerRune.push(perk0Obj.icon);
+            if (perk1Obj !== null) summonerRune.push(perk1Obj.icon);
 
             match.outcome = this.getOutcome(gameMatch, teamId);
             match.kda = statsObject.kills + "-" + statsObject.deaths + "-" + statsObject.assists;
-            match.summonerSpells = lodash.concat(spell1, spell2);
-            match.summonerRunes = lodash.concat(perk0, perk1);
+            match.summonerSpells = summonerSpells;
+            match.summonerRunes = summonerRune;
             match.items = this.getItems(statsObject);
             match.championLevel = statsObject.champLevel;
 
             return match;
         })
 
+        console.log()
+
         await Promise.all(matchesWithGamesPromise);
 
+    }
+    
+    async getStatiscData(callback) {
+        try {
+            const object = await callback;
+            return object;
+        } catch{
+            return null;
+        }
     }
 
     getItems(statsObject: any): string[] {
