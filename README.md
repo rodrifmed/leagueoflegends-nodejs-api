@@ -15,3 +15,7 @@ A simple api to get match stats
 
 ## How to test?
 1) npm test
+
+## Method:
+
+Get /api/matches/:name
